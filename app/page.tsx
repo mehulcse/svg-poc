@@ -115,8 +115,8 @@ export default function Home() {
   };
 
   const containerStyle = {
-    width: '250px',  // Set a fixed width
-    height: '250px', // Set a fixed height
+    width: '400px',  // Set a fixed width
+    height: '400px', // Set a fixed height
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -210,8 +210,9 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col items-center mb-8">
+    <div className="flex h-screen">
+      {/* Left side - SVG display area */}
+      <div className="flex-1 p-4 flex items-center justify-center bg-gray-100">
         <Card className="w-fit">
           <CardContent className="p-4">
             {svgContent ? (
@@ -263,185 +264,186 @@ export default function Home() {
             )}
           </CardContent>
         </Card>
-        {svgContent && (
-          <Button onClick={handleDownload} className="mt-4">
-            Download as PNG
-          </Button>
-        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Section 1: Shadows and Direction */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Shadows and Direction</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>Inner Shadow <span className="text-xs text-yellow-600">(Work in Progress)</span></Label>
-                <Switch checked={innerShadow} onCheckedChange={setInnerShadow} />
-              </div>
-              {innerShadow && (
-                <div>
-                  <Label className="mb-2 block">Inner Shadow Color</Label>
-                  <Input 
-                    type="color" 
-                    value={innerShadowColor} 
-                    onChange={(e) => setInnerShadowColor(e.target.value)} 
-                  />
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <Label>Outer Shadow</Label>
-                <Switch checked={outerShadow} onCheckedChange={setOuterShadow} />
-              </div>
-              {outerShadow && (
-                <div>
-                  <Label className="mb-2 block">Outer Shadow Color</Label>
-                  <Input 
-                    type="color" 
-                    value={outerShadowColor} 
-                    onChange={(e) => setOuterShadowColor(e.target.value)} 
-                  />
-                </div>
-              )}
-              <div>
-                <Label className="mb-2 block">Shadow Direction and Intensity</Label>
-                <div 
-                  ref={quadrantRef}
-                  className="w-full h-64 bg-gray-200 relative cursor-pointer overflow-hidden"
-                  onClick={handleQuadrantClick}
-                >
-                  <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-1/2 left-1/2 w-px h-full bg-gray-400 transform -translate-x-1/2"></div>
-                    <div className="absolute top-1/2 left-1/2 w-full h-px bg-gray-400 transform -translate-y-1/2"></div>
-                    <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                    <div className="absolute top-1/2 left-1/2 w-16 h-16 border-2 border-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                    <div 
-                      className="absolute w-4 h-4 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"
-                      style={{ 
-                        left: `calc(50% + ${shadowX}px)`, 
-                        top: `calc(50% + ${shadowY}px)`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="mt-2 text-sm text-gray-600">X: {shadowX}px, Y: {shadowY}px</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 2: Size, Rotation, and Tilt */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Size, Rotation, and Tilt</h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-2 block">Size: {size}px</Label>
-                <Slider
-                  min={100}
-                  max={400}
-                  step={1}
-                  value={[size]}
-                  onValueChange={(value) => setSize(value[0])}
-                />
-              </div>
-              <div>
-                <Label className="mb-2 block">Rotation: {rotation}°</Label>
-                <Slider
-                  min={0}
-                  max={360}
-                  step={1}
-                  value={[rotation]}
-                  onValueChange={(value) => setRotation(value[0])}
-                />
-              </div>
-              <div>
-                <Label className="mb-2 block">Tilt: {tilt}°</Label>
-                <Slider
-                  min={0}
-                  max={90}
-                  step={1}
-                  value={[tilt]}
-                  onValueChange={(value) => setTilt(value[0])}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 3: Color */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Color</h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-2 block">Color</Label>
-                <Input 
-                  type="color" 
-                  value={color} 
-                  onChange={(e) => {
-                    setColor(e.target.value);
-                    updateSvgColor(e.target.value);
-                  }} 
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Reverse Color <span className="text-xs text-yellow-600">(Work in Progress)</span></Label>
-                <Switch checked={reverseColor} onCheckedChange={setReverseColor} />
-              </div>
-              <div>
-                <Label className="mb-2 block">Texture <span className="text-xs text-yellow-600">(Work in Progress)</span></Label>
+      {/* Right side - Controls sidebar */}
+      <div className="w-80 bg-white p-4 flex flex-col">
+        <div className="flex-grow overflow-y-auto">
+          <div className="space-y-6">
+            {/* Shadows and Direction */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Shadows and Direction</h3>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-16 h-16 rounded-full overflow-hidden">
-                    <Image
-                      src="/images/texture.png"
-                      alt="Texture"
-                      width={64}
-                      height={64}
-                      objectFit="cover"
+                  <Label>Inner Shadow <span className="text-xs text-yellow-600">(WIP)</span></Label>
+                  <Switch checked={innerShadow} onCheckedChange={setInnerShadow} />
+                </div>
+                {innerShadow && (
+                  <div>
+                    <Label className="mb-2 block">Inner Shadow Color</Label>
+                    <Input 
+                      type="color" 
+                      value={innerShadowColor} 
+                      onChange={(e) => setInnerShadowColor(e.target.value)} 
                     />
                   </div>
-                  <Switch checked={useTexture} onCheckedChange={setUseTexture} />
+                )}
+                <div className="flex items-center justify-between">
+                  <Label>Outer Shadow</Label>
+                  <Switch checked={outerShadow} onCheckedChange={setOuterShadow} />
+                </div>
+                {outerShadow && (
+                  <div>
+                    <Label className="mb-2 block">Outer Shadow Color</Label>
+                    <Input 
+                      type="color" 
+                      value={outerShadowColor} 
+                      onChange={(e) => setOuterShadowColor(e.target.value)} 
+                    />
+                  </div>
+                )}
+                <div>
+                  <Label className="mb-2 block">Shadow Direction</Label>
+                  <div 
+                    ref={quadrantRef}
+                    className="w-full h-32 bg-gray-200 relative cursor-pointer overflow-hidden"
+                    onClick={handleQuadrantClick}
+                  >
+                    <div className="absolute top-0 left-0 w-full h-full">
+                      <div className="absolute top-1/2 left-1/2 w-px h-full bg-gray-400 transform -translate-x-1/2"></div>
+                      <div className="absolute top-1/2 left-1/2 w-full h-px bg-gray-400 transform -translate-y-1/2"></div>
+                      <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                      <div className="absolute top-1/2 left-1/2 w-16 h-16 border-2 border-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                      <div 
+                        className="absolute w-4 h-4 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"
+                        style={{ 
+                          left: `calc(50% + ${shadowX}px)`, 
+                          top: `calc(50% + ${shadowY}px)`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">X: {shadowX}px, Y: {shadowY}px</div>
                 </div>
               </div>
-              <div>
-                <Label className="mb-2 block">Stroke Width: {strokeWidth}px</Label>
-                <Slider
-                  min={0}
-                  max={10}
-                  step={0.5}
-                  value={[strokeWidth]}
-                  onValueChange={(value) => setStrokeWidth(value[0])}
-                />
-              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Section 4: Shape */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Shape</h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-2 block">Mask Shape <span className="text-xs text-yellow-600">(Work in Progress)</span></Label>
-                <Select value={selectedShape} onValueChange={setSelectedShape}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select shape" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {shapes.map((shape) => (
-                      <SelectItem key={shape} value={shape}>
-                        {shape}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Size, Rotation, and Tilt */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Size, Rotation, and Tilt</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label className="mb-2 block">Size: {size}px</Label>
+                  <Slider
+                    min={100}
+                    max={400}
+                    step={1}
+                    value={[size]}
+                    onValueChange={(value) => setSize(value[0])}
+                  />
+                </div>
+                <div>
+                  <Label className="mb-2 block">Rotation: {rotation}°</Label>
+                  <Slider
+                    min={0}
+                    max={360}
+                    step={1}
+                    value={[rotation]}
+                    onValueChange={(value) => setRotation(value[0])}
+                  />
+                </div>
+                <div>
+                  <Label className="mb-2 block">Tilt: {tilt}°</Label>
+                  <Slider
+                    min={0}
+                    max={90}
+                    step={1}
+                    value={[tilt]}
+                    onValueChange={(value) => setTilt(value[0])}
+                  />
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Color */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Color</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label className="mb-2 block">Color</Label>
+                  <Input 
+                    type="color" 
+                    value={color} 
+                    onChange={(e) => {
+                      setColor(e.target.value);
+                      updateSvgColor(e.target.value);
+                    }} 
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Reverse Color <span className="text-xs text-yellow-600">(WIP)</span></Label>
+                  <Switch checked={reverseColor} onCheckedChange={setReverseColor} />
+                </div>
+                <div>
+                  <Label className="mb-2 block">Texture <span className="text-xs text-yellow-600">(WIP)</span></Label>
+                  <div className="flex items-center justify-between">
+                    <div className="w-16 h-16 rounded-full overflow-hidden">
+                      <Image
+                        src="/images/texture.png"
+                        alt="Texture"
+                        width={64}
+                        height={64}
+                        objectFit="cover"
+                      />
+                    </div>
+                    <Switch checked={useTexture} onCheckedChange={setUseTexture} />
+                  </div>
+                </div>
+                <div>
+                  <Label className="mb-2 block">Stroke Width: {strokeWidth}px</Label>
+                  <Slider
+                    min={0}
+                    max={10}
+                    step={0.5}
+                    value={[strokeWidth]}
+                    onValueChange={(value) => setStrokeWidth(value[0])}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Shape */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Shape</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label className="mb-2 block">Mask Shape <span className="text-xs text-yellow-600">(WIP)</span></Label>
+                  <Select value={selectedShape} onValueChange={setSelectedShape}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select shape" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shapes.map((shape) => (
+                        <SelectItem key={shape} value={shape}>
+                          {shape}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Download button at the bottom of the sidebar */}
+        {svgContent && (
+          <div className="mt-4 pt-4 border-t">
+            <Button onClick={handleDownload} className="w-full">
+              Download as PNG
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
