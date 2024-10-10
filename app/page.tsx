@@ -1,5 +1,6 @@
-"use client";
+"use client"; // Indicates that this is a client-side component
 
+// Importing necessary React hooks and components
 import { useState, useRef, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -8,12 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toPng } from 'html-to-image';
-import Image from 'next/image';
+import { toPng } from 'html-to-image'; // Library to convert HTML to image
+import Image from 'next/image'; // Next.js Image component for optimized image loading
 
+// Array of available shape options
 const shapes = ["Circle", "Rectangle", "Oval", "Hexagon"];
 
 export default function Home() {
+  // State variables for various SVG properties
   const [innerShadow, setInnerShadow] = useState(false);
   const [outerShadow, setOuterShadow] = useState(false);
   const [shadowX, setShadowX] = useState(0);
@@ -25,22 +28,26 @@ export default function Home() {
   const [rotation, setRotation] = useState(0);
   const [tilt, setTilt] = useState(0);
   const [svgContent, setSvgContent] = useState('');
-  const quadrantRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const dropZoneRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<HTMLDivElement>(null);
   const [useTexture, setUseTexture] = useState(false);
   const [strokeWidth, setStrokeWidth] = useState(2);
   const [innerShadowColor, setInnerShadowColor] = useState("#000000");
   const [outerShadowColor, setOuterShadowColor] = useState("#000000");
 
+  // Refs for accessing DOM elements
+  const quadrantRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<HTMLDivElement>(null);
+
+  // Effect to update SVG color when certain properties change
   useEffect(() => {
     if (svgContent) {
       updateSvgColor(color);
     }
   }, [svgContent, color, size, rotation, tilt, strokeWidth]);
 
+  // Function to handle file upload
   const handleFileUpload = (file: File) => {
     if (file && file.type === "image/svg+xml") {
       const reader = new FileReader();
@@ -54,6 +61,7 @@ export default function Home() {
     }
   };
 
+  // Function to generate SVG style object
   const getSvgStyle = () => {
     return {
       width: `${size}px`,
@@ -64,6 +72,7 @@ export default function Home() {
     };
   };
 
+  // Function to generate outer shadow style
   const getOuterShadowStyle = () => {
     if (!outerShadow) return '';
     
@@ -72,6 +81,7 @@ export default function Home() {
     return `drop-shadow(${shadowX}px ${shadowY}px ${blurRadius}px ${shadowColor})`;
   };
 
+  // Function to generate inner shadow filter
   const getInnerShadowFilter = () => {
     if (!innerShadow) return '';
     
@@ -99,6 +109,7 @@ export default function Home() {
     `;
   };
 
+  // Function to generate depth effect filter
   const getDepthEffect = () => {
     return `
       <filter id="depthEffect">
@@ -114,6 +125,7 @@ export default function Home() {
     `;
   };
 
+  // Style for the container of the SVG
   const containerStyle = {
     width: '400px',  // Set a fixed width
     height: '400px', // Set a fixed height
@@ -123,6 +135,7 @@ export default function Home() {
     overflow: 'hidden', // Hide overflow if SVG becomes larger than container
   };
 
+  // Style for the mask shape
   const maskStyle = {
     clipPath: selectedShape === "Circle" ? "circle(50%)" :
               selectedShape === "Rectangle" ? "inset(0)" :
@@ -130,6 +143,7 @@ export default function Home() {
               selectedShape === "Hexagon" ? "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" : "",
   };
 
+  // Function to handle click on the shadow direction quadrant
   const handleQuadrantClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (quadrantRef.current) {
       const rect = quadrantRef.current.getBoundingClientRect();
@@ -140,6 +154,7 @@ export default function Home() {
     }
   };
 
+  // Functions to handle drag and drop events
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -168,6 +183,7 @@ export default function Home() {
     }
   };
 
+  // Function to handle download of the SVG as PNG
   const handleDownload = async () => {
     if (svgRef.current) {
       try {
@@ -182,6 +198,7 @@ export default function Home() {
     }
   };
 
+  // Function to get the texture style
   const getTextureStyle = () => {
     return {
       backgroundImage: `url('/images/texture.png')`,
@@ -197,6 +214,7 @@ export default function Home() {
     };
   };
 
+  // Function to update the SVG color
   const updateSvgColor = (newColor: string) => {
     if (svgRef.current) {
       const svgElement = svgRef.current.querySelector('svg');
@@ -209,6 +227,7 @@ export default function Home() {
     }
   };
 
+  // The main component render
   return (
     <div className="flex h-screen">
       {/* Left side - SVG display area */}
@@ -449,6 +468,7 @@ export default function Home() {
   );
 }
 
+// Function to calculate hue rotation based on color
 function getHueRotate(color: string) {
   const hex = color.replace('#', '');
   const r = parseInt(hex.substr(0, 2), 16);
@@ -458,6 +478,7 @@ function getHueRotate(color: string) {
   return hsl[0] !== undefined ? Math.round(hsl[0] * 360) : 0;
 }
 
+// Function to convert RGB to HSL
 function rgbToHsl(r: number, g: number, b: number) {
   r /= 255; g /= 255; b /= 255;
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
