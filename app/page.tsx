@@ -22,7 +22,7 @@ export default function Home() {
   const [shadowX, setShadowX] = useState(0);
   const [shadowY, setShadowY] = useState(0);
   const [selectedShape, setSelectedShape] = useState("Circle");
-  const [color, setColor] = useState("#000000");
+  const [color, setColor] = useState("#8e8e8e");
   const [reverseColor, setReverseColor] = useState(false);
   const [size, setSize] = useState(200);
   const [rotation, setRotation] = useState(0);
@@ -67,7 +67,7 @@ export default function Home() {
       width: `${size}px`,
       height: `${size}px`,
       transform: `rotate(${rotation}deg) perspective(500px) rotateX(${tilt}deg)`,
-      filter: `${getOuterShadowStyle()} ${reverseColor && !useTexture ? 'invert(1)' : ''} ${!useTexture && reverseColor ? '' : `brightness(0) saturate(100%) ${color !== '#000000' ? `invert(1) sepia(100%) saturate(10000%) hue-rotate(${getHueRotate(color)}deg)` : ''}`}`,
+      filter: `${getOuterShadowStyle()} ${reverseColor && !useTexture ? 'invert(1)' : ''}`,
       opacity: useTexture ? 0.1 : 1, // Make icon more transparent when texture is used
     };
   };
@@ -86,25 +86,17 @@ export default function Home() {
     if (!innerShadow) return '';
     
     const shadowColor = innerShadowColor + "B3"; // Add alpha channel for 70% opacity
-    const lightColor = "rgba(255,255,255,0.7)";
     const offset = Math.max(1, Math.sqrt(shadowX * shadowX + shadowY * shadowY) / 5);
     return `
-      <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="${offset / 2}" result="blur"/>
-        <feOffset dx="${shadowX / 5}" dy="${shadowY / 5}" in="blur" result="offsetBlur"/>
-        <feFlood flood-color="${shadowColor}" result="shadowColor"/>
-        <feComposite in="shadowColor" in2="offsetBlur" operator="in" result="shadowInner"/>
-        
-        <feGaussianBlur in="SourceAlpha" stdDeviation="${offset / 2}" result="blur2"/>
-        <feOffset dx="${-shadowX / 5}" dy="${-shadowY / 5}" in="blur2" result="offsetBlur2"/>
-        <feFlood flood-color="${lightColor}" result="lightColor"/>
-        <feComposite in="lightColor" in2="offsetBlur2" operator="in" result="lightInner"/>
-        
-        <feMerge>
-          <feMergeNode in="shadowInner"/>
-          <feMergeNode in="lightInner"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
+      <filter id="innerShadow" x="0.198242" y="0.243164" width="88.3076" height="80.2656" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="4"/>
+      <feGaussianBlur stdDeviation="1"/>
+      <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"/>
+      <feBlend mode="normal" in2="shape" result="effect1_innerShadow_22_410"/>
       </filter>
     `;
   };
@@ -227,6 +219,23 @@ export default function Home() {
     }
   };
 
+  // Function to extract SVG attributes from content
+  const extractSvgAttributes = (content: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, "image/svg+xml");
+    const svgElement = doc.querySelector("svg");
+    if (svgElement) {
+      const attributes = svgElement.attributes;
+      const attrObj: { [key: string]: string } = {};
+      for (let i = 0; i < attributes.length; i++) {
+        const attr = attributes[i];
+        attrObj[attr.name] = attr.value;
+      }
+      return attrObj;
+    }
+    return {};
+  };
+
   // The main component render
   return (
     <div className="flex h-screen">
@@ -236,17 +245,18 @@ export default function Home() {
           <CardContent className="p-4">
             {svgContent ? (
               <div style={containerStyle}>
-                <div ref={svgRef as React.RefObject<HTMLDivElement>} style={{ ...maskStyle, position: 'relative' }}>
+                <div ref={svgRef as React.RefObject<HTMLDivElement>} style={{ position: 'relative' }}>
                   <div style={getTextureStyle()}></div>
-                  <svg width={size} height={size}>
-                    <defs dangerouslySetInnerHTML={{ __html: getInnerShadowFilter() + getDepthEffect() }} />
-                    <g filter={`${innerShadow ? "url(#innerShadow)" : ""} ${useTexture ? "url(#depthEffect)" : ""}`}>
-                      <foreignObject width="100%" height="100%">
-                        <div dangerouslySetInnerHTML={{ 
-                          __html: svgContent.replace(/<svg/, `<svg style="${Object.entries(getSvgStyle()).map(([key, value]) => `${key}:${value}`).join(';')}"`)
-                            .replace(/<path/g, `<path stroke="${color}" stroke-width="${strokeWidth}"`)
-                        }} />
-                      </foreignObject>
+                  <svg
+                    {...extractSvgAttributes(svgContent)}
+                    width={size}
+                    height={size}
+                    style={getSvgStyle()}
+                  >
+                    <defs dangerouslySetInnerHTML={{ __html: getInnerShadowFilter() + getDepthEffect() }}>
+                    </defs>
+                    <g filter={innerShadow ? 'url(#innerShadow)' : ''}>
+                      <g dangerouslySetInnerHTML={{ __html: svgContent.replace(/<svg[^>]*>|<\/svg>/g, '') }} />
                     </g>
                   </svg>
                 </div>
